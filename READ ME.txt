@@ -1,0 +1,231 @@
+Sure! Below is a line-by-line explanation of the code you've provided.
+
+### 1. Book Class: Represents a Book
+
+```javascript
+class Book {
+    constructor(title, author, isbn) {
+        this.title = title;
+        this.author = author;
+        this.isbn = isbn;
+    }
+}
+```
+- **`class Book`**: This defines a class called `Book`. A class in JavaScript is a blueprint for creating objects.
+- **`constructor(title, author, isbn)`**: The constructor method is a special method that gets called when an object is created from this class. It initializes the properties of the book.
+- **`this.title = title;`**: This assigns the `title` argument passed to the constructor to the `title` property of the `Book` object.
+- **`this.author = author;`**: Similarly, this assigns the `author` argument to the `author` property.
+- **`this.isbn = isbn;`**: This assigns the `isbn` argument to the `isbn` property.
+
+### 2. UI Class: Handle UI Tasks
+
+```javascript
+class UI {
+    static displayBooks() {
+        const books = Store.getBooks();
+
+        books.forEach((book) => UI.addBookToList(book));
+    }
+```
+- **`class UI`**: This defines a class called `UI` that contains static methods for handling UI-related tasks.
+- **`static displayBooks()`**: This is a static method that displays books. Static methods are called on the class itself, not on instances of the class.
+- **`const books = Store.getBooks();`**: This line retrieves the list of books stored in `localStorage` by calling the `getBooks` method from the `Store` class.
+- **`books.forEach((book) => UI.addBookToList(book));`**: This loops through the array of books and calls the `addBookToList` method for each book to add it to the UI.
+
+```javascript
+    static addBookToList(book) {
+        const list = document.querySelector('#book-list');
+
+        const row = document.createElement('tr');
+
+        row.innerHTML = `
+            <td>${book.title}</td>
+            <td>${book.author}</td>
+            <td>${book.isbn}</td>
+            <td><a href="#" class="btn btn-danger btn-sm delete">X</a></td>
+        `;
+
+        list.appendChild(row);
+    }
+```
+- **`static addBookToList(book)`**: This method adds a book to the list in the UI.
+- **`const list = document.querySelector('#book-list');`**: This selects the HTML element with the id `book-list`, which is where the list of books will be displayed.
+- **`const row = document.createElement('tr');`**: This creates a new table row (`<tr>` element).
+- **`row.innerHTML = ...`**: This sets the inner HTML of the row to include the book’s title, author, ISBN, and a delete button.
+- **`list.appendChild(row);`**: This appends the new row to the list.
+
+```javascript
+    static deleteBook(el) {
+        if (el.classList.contains('delete')) {
+            el.parentElement.parentElement.remove();
+        }
+    }
+```
+- **`static deleteBook(el)`**: This method deletes a book from the UI.
+- **`if (el.classList.contains('delete'))`**: This checks if the clicked element has the class `delete`. This ensures that the delete button was clicked.
+- **`el.parentElement.parentElement.remove();`**: This removes the entire row (book entry) from the table. The `el.parentElement` accesses the parent of the delete button (`<td>`), and `el.parentElement.parentElement` accesses the row (`<tr>`).
+
+```javascript
+    static showAlert(message, className) {
+        const div = document.createElement('div');
+        div.className = `alert alert-${className}`;
+        div.appendChild(document.createTextNode(message));
+        const container = document.querySelector('.container');
+        const form = document.querySelector('#book-form');
+        container.insertBefore(div, form);
+
+        // Vanish in 3 seconds
+        setTimeout(() => document.querySelector('.alert').remove(), 3000);
+    }
+```
+- **`static showAlert(message, className)`**: This method shows an alert message in the UI.
+- **`const div = document.createElement('div');`**: This creates a new `div` element for the alert.
+- **`div.className = \`alert alert-${className}\`;`**: This sets the class of the `div` to include Bootstrap alert classes, allowing for different styles (e.g., `alert-success`, `alert-danger`).
+- **`div.appendChild(document.createTextNode(message));`**: This adds the message text to the `div`.
+- **`const container = document.querySelector('.container');`**: This selects the main container element where the alert will be placed.
+- **`const form = document.querySelector('#book-form');`**: This selects the form so that the alert can be inserted just before it.
+- **`container.insertBefore(div, form);`**: This inserts the alert `div` into the DOM, just before the form.
+- **`setTimeout(() => document.querySelector('.alert').remove(), 3000);`**: This removes the alert after 3 seconds.
+
+```javascript
+    static clearFields() {
+        document.querySelector('#title').value = '';
+        document.querySelector('#author').value = '';
+        document.querySelector('#isbn').value = '';
+    }
+}
+```
+- **`static clearFields()`**: This method clears the form fields.
+- **`document.querySelector('#title').value = '';`**: This clears the value of the title input field.
+- **`document.querySelector('#author').value = '';`**: This clears the value of the author input field.
+- **`document.querySelector('#isbn').value = '';`**: This clears the value of the ISBN input field.
+
+### 3. Store Class: Handles Storage
+
+```javascript
+class Store {
+    static getBooks() {
+        let books;
+        if (localStorage.getItem('books') === null) {
+            books = [];
+        } else {
+            books = JSON.parse(localStorage.getItem('books'));
+        }
+
+        return books;
+    }
+
+    static addBook(book) {
+        const books = Store.getBooks();
+        books.push(book);
+        localStorage.setItem('books', JSON.stringify(books));
+    }
+
+    static removeBook(isbn) {
+        const books = Store.getBooks();
+
+        books.forEach((book, index) => {
+            if (book.isbn === isbn) {
+                books.splice(index, 1);
+            }
+        });
+
+        localStorage.setItem('books', JSON.stringify(books));
+    }
+}
+```
+- **`class Store`**: This defines a class called `Store` for handling `localStorage` operations.
+- **`static getBooks()`**: This method retrieves books from `localStorage`.
+  - **`let books;`**: Declares a variable to hold the books.
+  - **`if (localStorage.getItem('books') === null)`**: Checks if there are no books in `localStorage`.
+  - **`books = [];`**: If no books are found, initializes `books` as an empty array.
+  - **`books = JSON.parse(localStorage.getItem('books'));`**: If books are found, parses the JSON string from `localStorage` into an array.
+  - **`return books;`**: Returns the array of books.
+
+- **`static addBook(book)`**: This method adds a new book to `localStorage`.
+  - **`const books = Store.getBooks();`**: Retrieves the existing books from `localStorage`.
+  - **`books.push(book);`**: Adds the new book to the array.
+  - **`localStorage.setItem('books', JSON.stringify(books));`**: Saves the updated array back to `localStorage` as a JSON string.
+
+- **`static removeBook(isbn)`**: This method removes a book from `localStorage` by its ISBN.
+  - **`const books = Store.getBooks();`**: Retrieves the existing books from `localStorage`.
+  - **`books.forEach((book, index)`**: Loops through the books array.
+  - **`if (book.isbn === isbn)`**: Checks if the current book's ISBN matches the ISBN to be removed.
+  - **`books.splice(index, 1);`**: Removes the book from the array if it matches.
+  - **`localStorage.setItem('books', JSON.stringify(books));`**: Saves the updated array back to `localStorage`.
+
+### 4. Event Listeners
+
+```javascript
+// Event: Display Books
+document.addEventListener('DOMContentLoaded', UI.displayBooks);
+```
+- **`document.addEventListener('DOMContentLoaded', UI.displayBooks);`**: This event listener waits for the DOM to be fully loaded, then calls the `UI.displayBooks()` method to display the books.
+
+```javascript
+// Event: Add a Book
+document.querySelector('#book-form').addEventListener('submit', (e) => {
+    e.preventDefault();
+
+    // Get form values
+    const title = document.querySelector('#title').value;
+    const author = document.querySelector('#author').value;
+    const isbn = document.querySelector('#isbn').value;
+
+    // Validate
+    if (title === '' || author ===
+
+ '' || isbn === '') {
+        UI.showAlert('Please fill in all fields', 'danger');
+    } else {
+        // Instantiate book
+        const book = new Book(title, author, isbn);
+
+        // Add Book to UI
+        UI.addBookToList(book);
+
+        // Add book to store
+        Store.addBook(book);
+
+        // Show success message
+        UI.showAlert('Book Added', 'success');
+
+        // Clear fields
+        UI.clearFields();
+    }
+});
+```
+- **`document.querySelector('#book-form').addEventListener('submit', (e) => {...});`**: Adds an event listener to the form that listens for the submit event.
+- **`e.preventDefault();`**: Prevents the form from submitting in the traditional way, which would refresh the page.
+- **`const title = document.querySelector('#title').value;`**: Retrieves the value of the title input field.
+- **`const author = document.querySelector('#author').value;`**: Retrieves the value of the author input field.
+- **`const isbn = document.querySelector('#isbn').value;`**: Retrieves the value of the ISBN input field.
+- **`if (title === '' || author === '' || isbn === '') { ... } else { ... }`**: Checks if any of the fields are empty. If they are, an alert is shown; otherwise, the book is added.
+- **`const book = new Book(title, author, isbn);`**: Creates a new `Book` object.
+- **`UI.addBookToList(book);`**: Adds the book to the UI.
+- **`Store.addBook(book);`**: Adds the book to `localStorage`.
+- **`UI.showAlert('Book Added', 'success');`**: Shows a success message.
+- **`UI.clearFields();`**: Clears the input fields.
+
+```javascript
+// Event: Remove a Book
+document.querySelector('#book-list').addEventListener('click', (e) => {
+    // Remove book from UI
+    UI.deleteBook(e.target);
+
+    // Remove book from store
+    Store.removeBook(e.target.parentElement.previousElementSibling.textContent);
+
+    // Show success message
+    UI.showAlert('Book Removed', 'success');
+});
+```
+- **`document.querySelector('#book-list').addEventListener('click', (e) => {...});`**: Adds an event listener to the book list that listens for clicks.
+- **`UI.deleteBook(e.target);`**: Removes the book from the UI.
+- **`Store.removeBook(e.target.parentElement.previousElementSibling.textContent);`**: Removes the book from `localStorage` by getting its ISBN.
+- **`UI.showAlert('Book Removed', 'success');`**: Shows a success message indicating the book was removed.
+
+This code provides a basic book list application that can add and remove books, display them in a list, and persist them in the browser's `localStorage`.
+
+
+
