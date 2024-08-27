@@ -1,0 +1,8 @@
+{
+  
+  "name" : "booklist" ,
+  "homepage": "https://devansh0810.github.io/booklist",
+  "dependencies": {
+    "gh-pages": "^6.1.1"
+  }
+}
